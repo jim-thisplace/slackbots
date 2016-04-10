@@ -1,0 +1,14 @@
+{
+  "SLACK_BOT_AVATAR_URL": "https://i.imgur.com/0T1ft62.png",
+  "SLACK_BOT_NAME": "MeetingRoomBot",
+  "SLACK_CHANNELS": [
+    "bottestinggrounds",
+    "botinvasion"
+  ],
+  "GOOGLE_CALENDAR_MEETING_ROOM_NAMES" : [
+    "Down Town",
+    "Meeting Room Tokyo",
+    "Meeting Room Brussels",
+    "Meeting Room 3rd Floor"
+  ]
+}

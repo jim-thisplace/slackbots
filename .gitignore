@@ -1,0 +1,7 @@
+npm-debug.log
+node_modules
+credentials.json
+.idea
+google-client-secret.json
+google-calendar-token.json
+slack-client-secret.json
