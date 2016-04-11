@@ -65,8 +65,9 @@ function populateUsersDict() {
 }
 
 /**
- * @param {string} username
- * @param {string[]} [channels]
+ * @param {string}      username
+ * @param {string[]}    [channels]
+ * @param {string}      [icon_url]
  * @returns {!Promise}
  */
 function connect(username, channels, icon_url) {

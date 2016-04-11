@@ -1,5 +1,10 @@
-/** Adapted from https://developers.google.com/google-apps/calendar/quickstart/nodejs#step_4_run_the_sample **/
-var q = require('kew');
+/**
+ * Queries Google Calendars of the meeting rooms and caches the response with a 10 min lifetime.
+ * Adapted from https://developers.google.com/google-apps/calendar/quickstart/nodejs#step_4_run_the_sample
+ */
+
+var q      = require('kew');
+var moment = require('moment');
 
 var SETTINGS = require('./settings');
 
@@ -75,43 +80,6 @@ function storeToken(token) {
     console.log('Token stored to ' + TOKEN_PATH);
 }
 
-/**
- * Lists the next 10 events on the user's primary calendar.
- */
-function listEvents() {
-    var deferred = q.defer();
-    var calendar = google.calendar('v3');
-    calendar.events.list({
-        auth         : client_oauth,
-        calendarId   : 'primary',
-        timeMin      : (new Date()).toISOString(),
-        maxResults   : 10,
-        singleEvents : true,
-        orderBy      : 'startTime'
-    }, function (err, response) {
-        if (err) {
-            console.log('The API returned an error: ' + err);
-            return;
-        }
-        var events = response.items;
-
-        var eventsList = [];
-        if (events.length == 0) {
-            eventsList.push('No upcoming events found.');
-        } else {
-            for (var i = 0; i < events.length; i++) {
-                var event = events[i];
-                var start = event.start.dateTime || event.start.date;
-                eventsList.push('%s - %s\n' + start + '\n' + event.summary + '\n');
-            }
-        }
-
-        deferred.resolve('```' + eventsList.join('\n') + '```');
-    });
-
-    return deferred;
-}
-
 var BOT_MONITORED_MEETING_ROOMS = new RegExp(SETTINGS.GOOGLE_CALENDAR_MEETING_ROOM_NAMES.join('|'), 'i');
 var CALENDAR_ID_BY_NAME         = {};
 
@@ -137,31 +105,55 @@ function getCalendarList() {
     return deferred;
 }
 
+var freebusyResponseCache   = {};
+var freebusyCacheTimestamps = {};
+
+var CACHED_RESPONSE_LIFETIME = 1000 * 60 * 60 * 10; // 10 minutes
+
 function freeBusySingle(meetingRoomName) {
     var deferred = q.defer();
 
-    var today    = new Date();
-    var tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 3);
+    var cachedResponse  = freebusyResponseCache[meetingRoomName];
+    var cachedTimestamp = freebusyCacheTimestamps[meetingRoomName];
 
-    google.calendar('v3').freebusy.query({
-        auth     : client_oauth,
-        resource : {
-            timeMin : today.toISOString(),
-            timeMax : tomorrow.toISOString(),
-            items   : [{ id : CALENDAR_ID_BY_NAME[meetingRoomName] }]
-        }
-    }, function (err, response) {
-        if (err) {
-            deferred.reject(err);
-        } else {
-            var id = Object.keys(response.calendars)[0];
-            var busyTimes = response.calendars[id].busy;
-            deferred.resolve(busyTimes);
-        }
-    });
+    var isCachedResponseExpired = new Date() - cachedTimestamp > CACHED_RESPONSE_LIFETIME;
+
+    if (cachedResponse && !isCachedResponseExpired) {
+        deferred.resolve(cachedResponse);
+
+    } else {
+        var today    = new Date();
+        var tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0);
+
+        google.calendar('v3').freebusy.query({
+            auth     : client_oauth,
+            resource : {
+                timeMin : today.toISOString(),
+                timeMax : tomorrow.toISOString(),
+                items   : [{ id : CALENDAR_ID_BY_NAME[meetingRoomName] }]
+            }
+        }, function (err, response) {
+            if (err) {
+                deferred.reject(err);
+            } else {
+                var id        = Object.keys(response.calendars)[0];
+                var busyTimes = response.calendars[id].busy;
+
+                freebusyResponseCache[meetingRoomName]   = busyTimes;
+                freebusyCacheTimestamps[meetingRoomName] = +new Date();
+
+                deferred.resolve(busyTimes);
+            }
+        });
+    }
 
     return deferred;
+}
+
+function freeBusyAll() {
+    return q.all(SETTINGS.GOOGLE_CALENDAR_MEETING_ROOM_NAMES.map(freeBusySingle));
 }
 
 function googleAuthorize() {
@@ -180,6 +172,6 @@ function googleAuthorize() {
 
 module.exports = {
     authorize      : googleAuthorize,
-    listEvents     : listEvents,
-    freeBusySingle : freeBusySingle
+    freeBusySingle : freeBusySingle,
+    freeBusyAll    : freeBusyAll
 };

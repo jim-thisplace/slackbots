@@ -1,6 +1,6 @@
 {
   "SLACK_BOT_AVATAR_URL": "https://i.imgur.com/0T1ft62.png",
-  "SLACK_BOT_NAME": "MeetingRoomBot",
+  "SLACK_BOT_NAME": "MeetingRooms",
   "SLACK_CHANNELS": [
     "bottestinggrounds",
     "botinvasion"
