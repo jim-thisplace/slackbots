@@ -3,7 +3,7 @@ var slack    = require('./slack');
 var google   = require('./google');
 var moment   = require('moment');
 
-var MEETING_ROOM_MENTION = /(any|which|what)*.*( meeting )*room(s)*([\w ]+)*free(\?)*/gi;
+var MEETING_ROOM_MENTION = /(any|which|what)*.*(( meeting )*room(s)*|one(s)*)([\w ]+)*free(\?)*/gi;
 
 var ROOM_NAME_BY_TRIGGER = {
     'downtown'    : 'Down Town',
