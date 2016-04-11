@@ -3,6 +3,27 @@ var slack    = require('./slack');
 var google   = require('./google');
 var moment   = require('moment');
 
+// todo : stuff this into the general disposition module (along with sentiment analysis + message patterns)
+/**
+ * Bot : << some useful info here >>
+ * Jim : nice one!
+ * Bot : Thanks
+ */
+var ACKNOWLEDGE = [
+    'Thanks',
+    'Cheers',
+    ':)',
+    ';)',
+    'You bet!',
+    'Totally',
+    'Oh definitely',
+    'yep yep'
+];
+
+function getRandomAcknowledgement() {
+    return ACKNOWLEDGE[Math.floor(Math.random() * ACKNOWLEDGE.length)];
+}
+
 var MEETING_ROOM_MENTION = /(any|which|what)*.*(( meeting )*room(s)*|one(s)*)([\w ]+)*free(\?)*/gi;
 
 var ROOM_NAME_BY_TRIGGER = {
