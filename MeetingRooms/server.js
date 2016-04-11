@@ -15,7 +15,8 @@ var ROOM_NAME_BY_TRIGGER = {
     'floor three' : 'Meeting Room 3rd Floor',
     'top floor'   : 'Meeting Room 3rd Floor',
     'tokyo'       : 'Meeting Room Tokyo',
-    'brussels'    : 'Meeting Room Brussels'
+    'brussels'    : 'Meeting Room Brussels',
+    'seattle'     : 'Meeting Room Seattle'
 };
 
 var ROOM_TRIGGERS = Object.keys(ROOM_NAME_BY_TRIGGER);
