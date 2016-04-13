@@ -3,7 +3,8 @@
   "SLACK_BOT_NAME": "MeetingRooms",
   "SLACK_CHANNELS": [
     "bottestinggrounds",
-    "botinvasion"
+    "botinvasion",
+    "office-events"
   ],
   "GOOGLE_CALENDAR_MEETING_ROOM_NAMES" : [
     "Down Town",

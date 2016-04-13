@@ -84,7 +84,7 @@ function getHumanReadableFreeBusyStatus(meetingRoomName, busyTimes) {
                 EMOJI.BUSY,
                 meetingRoomName,
                 'is *busy right now*. It\'s free',
-                moment(event.end).toNow() + '.'
+                moment(event.end).fromNow() + '.'
             ].join(' ');
             break;
         }
