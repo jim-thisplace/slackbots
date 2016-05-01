@@ -27,3 +27,7 @@
 cd Pepe
 npm start
 ```
+# Known issues
+
+- Pepperoni orders have an unintended extra pepperoni topping
+- Multiple pizza order not yet supported / detected
